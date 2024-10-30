@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart, Battery, Star, Zap } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { SignInButton } from "@clerk/nextjs";
 
 export default function HomePage() {
   return (
@@ -20,9 +21,9 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="space-x-4">
-                <Link href={"/product"}>
-                  <Button>Get Started</Button>
-                </Link>
+                <SignInButton>
+                  <Button>Join Now</Button>
+                </SignInButton>
                 <Link href={"/about"}>
                   <Button variant="outline">Learn More</Button>
                 </Link>

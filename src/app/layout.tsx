@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AIChatButton from "../components/AiChatButton";
+import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -16,15 +17,17 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
-        <Header />
-        <div className="mx-auto flex min-h-screen w-max flex-col">
-          {children}
-          <AIChatButton />
-        </div>
-        <Footer />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={`${GeistSans.variable}`}>
+        <body>
+          <Header />
+          <div className="mx-auto flex min-h-screen w-max flex-col">
+            {children}
+            <AIChatButton />
+          </div>
+          <Footer />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
