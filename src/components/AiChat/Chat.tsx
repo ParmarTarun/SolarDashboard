@@ -20,10 +20,10 @@ const Chat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     // handle the ctrl + enter key for better UX
     if (e.key === "Enter" && e.ctrlKey) {
-      handleSendMessage();
+      await handleSendMessage();
     }
   };
 

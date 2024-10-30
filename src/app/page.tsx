@@ -117,9 +117,9 @@ export default function HomePage() {
                     ))}
                   </div>
                   <p className="text-gray-500 dark:text-gray-400">
-                    "Exergi has transformed our energy consumption. The
+                    &quot;Exergi has transformed our energy consumption. The
                     installation was smooth, and the ongoing support is
-                    exceptional."
+                    exceptional.&quot;
                   </p>
                   <p className="font-semibold">- Happy Customer {i}</p>
                 </div>

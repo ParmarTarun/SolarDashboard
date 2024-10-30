@@ -7,7 +7,7 @@ export const POST = async (req: NextRequest) => {
     return new NextResponse("Query is missing", { status: 400 });
   }
 
-  if (!validateQuery(query)) {
+  if (!validateQuery(query as string)) {
     return NextResponse.json({
       message: "Looks like your query does not relate to my expertise. Sorry!",
     });
