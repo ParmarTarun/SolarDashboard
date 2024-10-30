@@ -12,7 +12,7 @@ export const sendQuery = async (query: string) => {
   };
 
   try {
-    const { data } = await axios.post("/api/chat/query", {
+    const { data } = await axios.post<{ message: string }>("/api/chat/query", {
       query,
     });
     resp.data = data.message;
@@ -20,7 +20,7 @@ export const sendQuery = async (query: string) => {
     console.log(e);
     resp.error = "Failed to get a reply";
     if (axios.isAxiosError(e) && e.response?.data) {
-      resp.error = e.response?.data;
+      resp.error = e.response?.data as string;
     }
   }
   return resp;
