@@ -4,8 +4,9 @@ import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import AIChatButton from "../components/AiChatButton";
+import AIChatButton from "../components/AiChat/AiChatButton";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -22,6 +23,7 @@ export default function RootLayout({
         <body>
           <Header />
           <div className="mx-auto flex min-h-screen w-max flex-col">
+            <Toaster />
             {children}
             <AIChatButton />
           </div>
