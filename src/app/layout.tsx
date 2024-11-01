@@ -22,7 +22,7 @@ export default function RootLayout({
       <html lang="en" className={`${GeistSans.variable}`}>
         <body>
           <Header />
-          <div className="mx-auto flex min-h-screen w-max flex-col">
+          <div className="mx-auto flex min-h-[90vh] w-max flex-col">
             <Toaster />
             {children}
             <AIChatButton />

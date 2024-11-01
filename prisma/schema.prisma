@@ -10,11 +10,19 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model User {
+    id        String   @id @default(cuid())
+    email     String   @unique
+    firstName String
+    lastName  String
+    imageUrl  String?
+    AiChat    AiChat[]
+}
 
-    @@index([name])
+model AiChat {
+    id     String @id @default(cuid())
+    text   String
+    sender String
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
 }

@@ -1,96 +1,107 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MessageSquareMore, Send } from "lucide-react";
+import { Loader, MessageSquareMore, Send } from "lucide-react";
 import { useState } from "react";
-import { Message } from "@/types";
-import { sendQuery } from "@/lib/solarExpert";
+import { fetchMessages, sendQuery } from "@/lib/solarExpert";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/nextjs";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Chat = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 0,
-      text: "Hello there! How can I help you today?",
-      sender: "ai",
-    },
-  ]);
+  const queryClient = useQueryClient();
   const [inputMessage, setInputMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { userId } = useAuth();
+
+  const { isLoading: chatLoading, data: messages } = useQuery({
+    queryKey: ["aichat"],
+    queryFn: fetchMessages,
+    staleTime: Infinity,
+  });
+  const { mutate: sendMessage, isPending } = useMutation({
+    mutationFn: sendQuery,
+    onSuccess: ({ reply }) => {
+      setInputMessage("");
+      // add ai reply in the chat
+      queryClient.setQueryData(
+        ["aichat"],
+        [
+          ...messages,
+          {
+            id: messages.length,
+            text: reply,
+            sender: "ai",
+          },
+        ],
+      );
+    },
+    onError: (error) => {
+      toast({
+        title: "Oops",
+        description: error.message,
+      });
+    },
+  });
+  const lastMsgElement = Array.from(
+    document.getElementsByClassName("chatmsg"),
+  ).pop();
+  lastMsgElement?.scrollIntoView({ behavior: "smooth" });
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     // handle the ctrl + enter key for better UX
-    if (e.key === "Enter" && e.ctrlKey) {
+    if ((e.key === "Enter" && e.ctrlKey) || e.key === "Enter") {
       await handleSendMessage();
     }
   };
 
   const handleSendMessage = async () => {
-    //TODO: scroll the scroll area to the bottom
-
     if (!inputMessage.length) return;
-    // create new message
-    const newMessage: Message = {
-      id: messages.length, // mock id
-      sender: "user",
-      text: inputMessage,
-    };
-    setMessages((prev) => [...prev, newMessage]);
-    setInputMessage("");
-
-    //TODO: rafactor to work with react-query and avoid maintaining loading state
-    setIsLoading(true);
-    const { data, error } = await sendQuery(inputMessage);
-    if (error) {
-      toast({
-        title: "Oops",
-        description: error,
-      });
-    } else {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length,
-          text: data,
-          sender: "ai",
-        },
-      ]);
-    }
-    setIsLoading(false);
-
-    // scroll up  (TODO: refactor & do better, avoid using query selector)
-    setTimeout(() => {
-      document
-        .getElementById(`msg-${messages.length + 1}`)
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 1000);
+    // add users message in the chat
+    queryClient.setQueryData(
+      ["aichat"],
+      [
+        ...messages,
+        { id: messages.length, sender: "user", text: inputMessage },
+      ],
+    );
+    sendMessage(inputMessage);
   };
+
+  useEffect(() => {
+    if (!userId) {
+      toast({
+        title: "A Tip",
+        description: "Log In to retain your chats!",
+      });
+    }
+  }, []);
 
   return (
     <div className="flex h-[60vh] flex-col">
       <ScrollArea className="flex-grow space-y-4 p-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            id={`msg-${message.id}`}
-            className={`flex ${
-              message.sender === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
+        {chatLoading && <Loader className="mx-auto animate-spin" />}
+        {!chatLoading &&
+          messages.map((message) => (
             <div
-              className={`my-2 max-w-[80%] rounded-lg p-2 ${
-                message.sender === "user"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-800"
+              key={message.id}
+              className={`chatmsg flex ${
+                message.sender === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              {message.text}
+              <div
+                className={`my-2 max-w-[80%] rounded-lg p-2 ${
+                  message.sender === "user"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-800"
+                }`}
+              >
+                {message.text}
+              </div>
             </div>
-          </div>
-        ))}
-        {isLoading && (
+          ))}
+        {isPending && (
           <div className="flex justify-start">
             <div className="my-2 max-w-[80%] rounded-lg bg-gray-200 p-2 text-gray-800">
               <MessageSquareMore className="animate-pulse" />
@@ -98,7 +109,7 @@ const Chat = () => {
           </div>
         )}
       </ScrollArea>
-      <div className="flex items-center">
+      <div className="mt-2 flex items-center">
         <Input
           type="text"
           placeholder="Ask anything about solar tech..."

@@ -1,27 +1,22 @@
 import axios from "axios";
-import { ResponseType } from "@/types";
+import { Message } from "@/types";
 
 export const validateQuery = (query: string): boolean => {
   return query.includes("solar");
 };
 
 export const sendQuery = async (query: string) => {
-  const resp: ResponseType<string> = {
-    data: "",
-    error: null,
-  };
+  const res = await axios.post<{ reply: string }>("/api/chat/query", {
+    query,
+  });
+  return res.data;
+};
 
-  try {
-    const { data } = await axios.post<{ message: string }>("/api/chat/query", {
-      query,
-    });
-    resp.data = data.message;
-  } catch (e) {
-    console.log(e);
-    resp.error = "Failed to get a reply";
-    if (axios.isAxiosError(e) && e.response?.data) {
-      resp.error = e.response?.data as string;
-    }
-  }
-  return resp;
+export const fetchMessages = async () => {
+  const resp = await axios.get<{ messages: Message[] }>("/api/chat");
+  return resp.data.messages;
+};
+
+export const formatQuery = (query: string): string => {
+  return query + ". Keep it brief and under 200 characters";
 };
