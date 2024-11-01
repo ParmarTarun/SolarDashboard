@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest) => {
   const { userId } = await auth();
-  const { query } = await req.json();
+  const { query }: { query: string } = await req.json();
   if (!query) {
     return new NextResponse("Query is missing", { status: 400 });
   }
@@ -34,7 +34,5 @@ export const POST = async (req: NextRequest) => {
     });
   }
 
-  return NextResponse.json({
-    reply,
-  });
+  return NextResponse.json({ reply });
 };
