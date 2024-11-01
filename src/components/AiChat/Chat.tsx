@@ -23,7 +23,6 @@ const Chat = () => {
   const { mutate: sendMessage, isPending } = useMutation({
     mutationFn: sendQuery,
     onSuccess: ({ reply }) => {
-      setInputMessage("");
       // add ai reply in the chat
       queryClient.setQueryData(
         ["aichat"],
@@ -59,6 +58,7 @@ const Chat = () => {
   const handleSendMessage = async () => {
     if (!inputMessage.length) return;
     // add users message in the chat
+    setInputMessage("");
     queryClient.setQueryData(
       ["aichat"],
       [

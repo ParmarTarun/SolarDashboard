@@ -11,6 +11,7 @@ import Step1 from "./FormSteps/Step1";
 import Step2 from "./FormSteps/Step2";
 import Step3 from "./FormSteps/Step3";
 import { Button } from "@/components/ui/button";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 type Inputs = z.infer<typeof FormDataSchema>;
 
@@ -30,6 +31,8 @@ const steps = [
 
 export default function QuoteForm() {
   const [currentStep, setCurrentStep] = useState(1);
+
+  const queryClient = new QueryClient();
 
   const {
     register,
@@ -69,39 +72,41 @@ export default function QuoteForm() {
   };
 
   return (
-    <div className="mx-auto mt-12 grid grid-cols-12 gap-8">
-      <Progress steps={steps} currentStep={currentStep} />
-      <div className="col-span-8">
-        <form onSubmit={handleSubmit(processForm)}>
-          {currentStep === 1 && (
-            <Step1
-              errors={errors}
-              register={register}
-              setValue={setValue}
-              zoneValue={getValues("zone")}
-            />
-          )}
+    <QueryClientProvider client={queryClient}>
+      <div className="mx-auto mt-12 grid grid-cols-12 gap-8">
+        <Progress steps={steps} currentStep={currentStep} />
+        <div className="col-span-8">
+          <form onSubmit={handleSubmit(processForm)}>
+            {currentStep === 1 && (
+              <Step1
+                errors={errors}
+                register={register}
+                setValue={setValue}
+                zone={getValues("zone")}
+              />
+            )}
 
-          {currentStep === 2 && <Step2 errors={errors} register={register} />}
+            {currentStep === 2 && <Step2 errors={errors} register={register} />}
 
-          {currentStep === 3 && <Step3 />}
-        </form>
+            {currentStep === 3 && <Step3 />}
+          </form>
 
-        <div className="mt-8 pt-5">
-          <div className="flex gap-4">
-            <Button type="button" onClick={prev} disabled={currentStep === 1}>
-              Back
-            </Button>
-            <Button
-              type="button"
-              onClick={next}
-              disabled={currentStep === steps.length}
-            >
-              NEXT
-            </Button>
+          <div className="mt-8 pt-5">
+            <div className="flex gap-4">
+              <Button type="button" onClick={prev} disabled={currentStep === 1}>
+                Back
+              </Button>
+              <Button
+                type="button"
+                onClick={next}
+                disabled={currentStep === steps.length}
+              >
+                NEXT
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </QueryClientProvider>
   );
 }

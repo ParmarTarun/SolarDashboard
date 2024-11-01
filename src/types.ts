@@ -18,3 +18,8 @@ export type formStepComponentProps = {
   register: UseFormRegister<z.infer<typeof FormDataSchema>>;
   errors: FieldErrors<z.infer<typeof FormDataSchema>>;
 };
+
+export type zone = {
+  name: string;
+  value: string;
+};
