@@ -10,13 +10,23 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model Account {
+    id          String @id @default(cuid())
+    accountName String
+    userId      String
+    zoneName    String
+    zoneValue   String
+    user        User   @relation(fields: [userId], references: [id])
+}
+
 model User {
-    id        String   @id @default(cuid())
-    email     String   @unique
+    id        String    @id @default(cuid())
+    email     String    @unique
     firstName String
     lastName  String
     imageUrl  String?
     AiChat    AiChat[]
+    Account   Account[]
 }
 
 model AiChat {
@@ -25,4 +35,12 @@ model AiChat {
     sender String
     userId String
     user   User   @relation(fields: [userId], references: [id])
+}
+
+model Bill {
+    id    String @id @default(cuid())
+    month String
+    year  Int
+    cost  Int
+    usage Int
 }

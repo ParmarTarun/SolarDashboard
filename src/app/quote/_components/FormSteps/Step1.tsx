@@ -80,7 +80,7 @@ const Step1: FC<Step1Props> = ({ register, errors, setValue, zone }) => {
               <SelectInput
                 options={zones}
                 selectedValue={zone}
-                id="zone"
+                name="zone"
                 onSelect={(v) => setValue("zone", v)}
               />
               {errors.zone?.message && (

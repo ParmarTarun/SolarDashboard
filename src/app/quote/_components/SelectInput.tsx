@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { capitalize, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -20,21 +20,19 @@ import {
 } from "@/components/ui/popover";
 
 interface SelectInputProps {
-  id: string;
+  name: string;
   selectedValue?: string;
   onSelect: (v: string) => void;
   options: { name: string; value: string }[];
 }
 
 export const SelectInput: React.FC<SelectInputProps> = ({
-  id,
+  name,
   onSelect,
   options,
   selectedValue,
 }) => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState(selectedValue || "");
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -42,37 +40,41 @@ export const SelectInput: React.FC<SelectInputProps> = ({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[200px] justify-between text-lg"
         >
-          {value
-            ? options.find((framework) => framework.value === value)?.name
-            : "Select framework..."}
+          {selectedValue
+            ? capitalize(
+                options.find((option) => option.value === selectedValue)?.name,
+              )
+            : `Select ${name}...`}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." id={id} />
+          <CommandInput placeholder={`Search...`} />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No option found.</CommandEmpty>
             <CommandGroup>
               {options.map((framework) => (
                 <CommandItem
                   key={framework.value}
                   value={framework.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    // setValue(currentValue);
                     setOpen(false);
-                    onSelect(currentValue === value ? "" : currentValue);
+                    onSelect(currentValue);
                   }}
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
-                      value === framework.value ? "opacity-100" : "opacity-0",
+                      "mr-2 h-4 w-4 text-lg",
+                      selectedValue === framework.value
+                        ? "opacity-100"
+                        : "opacity-0",
                     )}
                   />
-                  {framework.name}
+                  {capitalize(framework.name)}
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -23,3 +23,21 @@ export type zone = {
   name: string;
   value: string;
 };
+
+export type powerType =
+  | "biomass"
+  | "coal"
+  | "gas"
+  | "geothermal"
+  | "hydro"
+  | "hydro discharge"
+  | "battery discharge"
+  | "nuclear"
+  | "oil"
+  | "solar"
+  | "wind";
+
+export type selectInputOption = {
+  name: string;
+  value: any;
+};
