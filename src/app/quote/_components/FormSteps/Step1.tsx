@@ -1,14 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getZones } from "@/lib/electricityMap";
 import { FormDataSchema } from "@/lib/schemas/QuoteForm";
-import { formStepComponentProps, zone } from "@/types";
+import { formStepComponentProps } from "@/types";
 import { FC } from "react";
 import { UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
-import { SelectInput } from "../SelectInput";
-import { useQuery } from "@tanstack/react-query";
-import { Loader } from "lucide-react";
+import ZoneInput from "@/components/ZoneInput";
 
 interface Step1Props extends formStepComponentProps {
   setValue: UseFormSetValue<z.infer<typeof FormDataSchema>>;
@@ -16,11 +13,6 @@ interface Step1Props extends formStepComponentProps {
 }
 
 const Step1: FC<Step1Props> = ({ register, errors, setValue, zone }) => {
-  const { data: zones, isLoading } = useQuery({
-    queryKey: ["zones"],
-    queryFn: getZones,
-  });
-
   return (
     <div className="animate-ease-in">
       <h2 className="text-base font-semibold leading-7 text-gray-900">
@@ -73,23 +65,15 @@ const Step1: FC<Step1Props> = ({ register, errors, setValue, zone }) => {
           >
             Zone
           </Label>
-          {isLoading ? (
-            <Loader className="animate-spin" />
-          ) : (
-            <div className="mt-2">
-              <SelectInput
-                options={zones}
-                selectedValue={zone}
-                name="zone"
-                onSelect={(v) => setValue("zone", v)}
-              />
-              {errors.zone?.message && (
-                <p className="mt-2 text-sm text-red-400">
-                  {errors.zone.message}
-                </p>
-              )}
-            </div>
-          )}
+          <div className="mt-2">
+            <ZoneInput
+              zone={zone}
+              setZone={(v: string) => setValue("zone", v)}
+            />
+            {errors.zone?.message && (
+              <p className="mt-2 text-sm text-red-400">{errors.zone.message}</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

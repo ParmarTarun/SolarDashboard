@@ -18,12 +18,20 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FC, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getPastPowerBreakdown } from "@/lib/electricityMap";
-import { SelectInput } from "@/app/quote/_components/SelectInput";
 import { powerType } from "@/types";
-import { createSelectOptions, powerTypes } from "@/lib/utils";
+import { capitalize, createSelectOptions, powerTypes } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import LoadingPlaceholder from "../LoadingPlaceholder";
@@ -46,7 +54,6 @@ interface HistoryPowerChartProps {
 
 const HistoryPowerChart: FC<HistoryPowerChartProps> = ({ zone }) => {
   const [powerType, setPowerType] = useState<powerType>("solar");
-  const powerOptions = createSelectOptions(powerTypes);
   const { isLoading, data: historyData } = useQuery({
     queryKey: ["power-breakdown", "history", zone, `${powerType}`],
     queryFn: () => getPastPowerBreakdown(zone, `${powerType}`),
@@ -69,15 +76,25 @@ const HistoryPowerChart: FC<HistoryPowerChartProps> = ({ zone }) => {
             Compare power production and consumption in your zone
           </CardDescription>
         </div>
-        <div>
-          <Label className="mr-4 text-lg font-semibold">Source</Label>
-          <SelectInput
-            name="Power Type"
-            onSelect={(v: powerType) => setPowerType(v)}
-            options={powerOptions}
-            selectedValue={powerType}
-          />
-        </div>
+
+        <Select
+          onValueChange={(v) => setPowerType(v as powerType)}
+          value={powerType}
+        >
+          <SelectTrigger className="w-[200px] text-lg">
+            <SelectValue placeholder="Select a fruit" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Source</SelectLabel>
+              {powerTypes.map((type) => (
+                <SelectItem value={type} key={type}>
+                  {capitalize(type)}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="max-h-[400px] w-full">

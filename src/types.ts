@@ -19,11 +19,6 @@ export type formStepComponentProps = {
   errors: FieldErrors<z.infer<typeof FormDataSchema>>;
 };
 
-export type zone = {
-  name: string;
-  value: string;
-};
-
 export type powerType =
   | "biomass"
   | "coal"
@@ -36,8 +31,3 @@ export type powerType =
   | "oil"
   | "solar"
   | "wind";
-
-export type selectInputOption = {
-  name: string;
-  value: any;
-};

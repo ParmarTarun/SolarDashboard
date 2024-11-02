@@ -31,6 +31,12 @@ const Header = () => {
         ))}
       </nav>
       <SignedIn>
+        <Link
+          className="mr-4 text-lg font-medium underline-offset-4 hover:underline"
+          href={"/dashboard"}
+        >
+          Dashboard
+        </Link>
         <UserButton />
       </SignedIn>
       <SignedOut>

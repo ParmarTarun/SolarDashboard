@@ -23,7 +23,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getLivePowerBreakdown } from "@/lib/electricityMap";
 import { Badge } from "@/components/ui/badge";
 import LoadingPlaceholder from "../LoadingPlaceholder";
-import { CircleDot } from "lucide-react";
+import { CircleDot, Terminal } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const chartConfig = {
   produced: {
@@ -43,8 +44,8 @@ interface LivePowerChartProps {
 const LivePowerChart: FC<LivePowerChartProps> = ({ zone }) => {
   const { isLoading, data: liveData } = useQuery({
     queryKey: ["power-breakdown", "live", zone],
-    queryFn: () => getLivePowerBreakdown(zone),
-    staleTime: 3600000, // 1 hour
+    queryFn: () => getLivePowerBreakdown(zone), // pass only the value
+    staleTime: 3600000, // fetch every hour
   });
 
   if (isLoading) {
@@ -71,34 +72,45 @@ const LivePowerChart: FC<LivePowerChartProps> = ({ zone }) => {
         </Badge>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="max-h-[400px] w-full">
-          <BarChart accessibilityLayer data={liveData.live}>
-            <ChartLegend content={<ChartLegendContent />} />
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="type" tickLine={true} />
-            <YAxis tickLine={true} />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dot" />}
-            />
-            <Bar dataKey="produced" fill="var(--color-produced)" radius={4} />
-            <Bar dataKey="consumed" fill="var(--color-consumed)" radius={4} />
-          </BarChart>
-        </ChartContainer>
+        {liveData.error && (
+          <Alert variant="destructive" className="mx-auto w-max">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Oops!</AlertTitle>
+            <AlertDescription>{liveData.error}</AlertDescription>
+          </Alert>
+        )}
+        {!liveData.error && (
+          <ChartContainer config={chartConfig} className="max-h-[400px] w-full">
+            <BarChart accessibilityLayer data={liveData.live}>
+              <ChartLegend content={<ChartLegendContent />} />
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="type" tickLine={true} />
+              <YAxis tickLine={true} />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent indicator="dot" />}
+              />
+              <Bar dataKey="produced" fill="var(--color-produced)" radius={4} />
+              <Bar dataKey="consumed" fill="var(--color-consumed)" radius={4} />
+            </BarChart>
+          </ChartContainer>
+        )}
       </CardContent>
       <CardFooter>
-        <div className="flex w-full items-start gap-2">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-4 text-lg font-semibold leading-none">
-              <Badge variant="destructive" className="text-lg">
-                Renewable {liveData.renewableAverage.toPrecision(4)} %
-              </Badge>
-              <Badge variant="outline" className="text-lg">
-                Fossil Free {liveData.fossilFreeAverage.toPrecision(4)} %
-              </Badge>
+        {!liveData.error && (
+          <div className="flex w-full items-start gap-2">
+            <div className="grid gap-2">
+              <div className="flex items-center gap-4 text-lg font-semibold leading-none">
+                <Badge variant="destructive" className="text-lg">
+                  Renewable {liveData.renewableAverage.toPrecision(4)} %
+                </Badge>
+                <Badge variant="outline" className="text-lg">
+                  Fossil Free {liveData.fossilFreeAverage.toPrecision(4)} %
+                </Badge>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </CardFooter>
     </Card>
   );

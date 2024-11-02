@@ -1,16 +1,17 @@
 import axios from "axios";
 import { electricityMapBaseUrl, powerTypes } from "./utils";
-import { zone } from "@/types";
 import moment from "moment";
 
-export const getZones = async (): Promise<zone[]> => {
+export const getZones = async (): Promise<string[]> => {
   const { data } = await axios.get<{ [key: string]: { zoneName: string } }>(
     `${electricityMapBaseUrl}/zones`,
   );
-
-  const zones: zone[] = Object.entries(data).map(([value, { zoneName }]) => {
-    return { name: zoneName, value: zoneName + " " + value };
-  });
+  //filter for US only & format the data
+  const zones: string[] = Object.entries(data)
+    .filter(([v]) => v.split("-")[0].toUpperCase() === "US")
+    .map(([value, { zoneName }]) => {
+      return value + "|" + zoneName; // format zone as string with label and value separated by delimiter
+    });
 
   return zones;
 };
@@ -46,26 +47,42 @@ export const getPastPowerBreakdown = async (zone: string, source: string) => {
 };
 
 export const getLivePowerBreakdown = async (zone: string) => {
-  const { data } = await axios.get(
-    `${electricityMapBaseUrl}/power-breakdown/latest?zone=${zone}`,
-    {
-      headers: {
-        "auth-token": "3hkUc4lFDdhoP",
+  console.log("fetching live");
+  try {
+    const { data } = await axios.get(
+      `${electricityMapBaseUrl}/power-breakdown/latest?zone=${zone}`,
+      {
+        headers: {
+          "auth-token": "3hkUc4lFDdhoP",
+        },
       },
-    },
-  );
+    );
 
-  const live = powerTypes.map((type) => {
+    const live = powerTypes.map((type) => {
+      return {
+        type,
+        produced: data.powerProductionBreakdown[type] || 0,
+        consumed: data.powerConsumptionBreakdown[type] || 0,
+      };
+    });
+    const renewableAverage = data.renewablePercentage;
+    const fossilFreeAverage = data.fossilFreePercentage;
+    const lastUpdated = moment(data.updatedAt).calendar();
+    console.log({ live });
+
+    return { live, renewableAverage, fossilFreeAverage, lastUpdated };
+  } catch (error) {
+    let msg = "Failed to get live data";
+    console.log(error);
+    if (axios.isAxiosError(error)) {
+      msg = error.response.data.error;
+    }
     return {
-      type,
-      produced: data.powerProductionBreakdown[type] || 0,
-      consumed: data.powerConsumptionBreakdown[type] || 0,
+      live: [],
+      renewableAverage: 0,
+      fossilFreeAverage: 0,
+      lastUpdated: moment(Date.now()).calendar(),
+      error: msg,
     };
-  });
-  const renewableAverage = data.renewablePercentage;
-  const fossilFreeAverage = data.fossilFreePercentage;
-  const lastUpdated = moment(data.updatedAt).calendar();
-  console.log({ live });
-
-  return { live, renewableAverage, fossilFreeAverage, lastUpdated };
+  }
 };

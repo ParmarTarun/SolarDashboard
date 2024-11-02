@@ -14,9 +14,10 @@ model Account {
     id          String @id @default(cuid())
     accountName String
     userId      String
-    zoneName    String
-    zoneValue   String
+    zone        String
     user        User   @relation(fields: [userId], references: [id])
+
+    @@unique([userId, accountName])
 }
 
 model User {
