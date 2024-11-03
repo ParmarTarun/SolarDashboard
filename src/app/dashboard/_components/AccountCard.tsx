@@ -29,11 +29,11 @@ const AccountCard: FC<AccountCardProps> = ({ account }) => {
 
   return (
     <Card className="flex h-[200px] flex-col justify-between transition-shadow hover:border-primary hover:shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between gap-4">
+      <CardHeader className="">
         <CardTitle className="text-xl transition-colors group-hover:text-primary">
           {capitalize(account.accountName)}
         </CardTitle>
-        <Badge variant="outline" className="text-md">
+        <Badge variant="default" className="text-md w-max">
           {account.zone.split("|")[1]}
         </Badge>
       </CardHeader>

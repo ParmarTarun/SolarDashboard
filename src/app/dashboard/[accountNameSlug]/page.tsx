@@ -31,7 +31,7 @@ const AccountDashboard = async ({ params }) => {
     <>
       <div className="my-4 flex items-center justify-between">
         <Badge variant="secondary" className="text-lg">
-          <p>Zone: {account.zone.split("|")[1]}</p>
+          <p>{account.zone.split("|")[1]}</p>
         </Badge>
       </div>
       <ChartsGrid zone={account.zone} />

@@ -39,7 +39,7 @@ const AccountModal = () => {
         accountName,
         zone,
       });
-      router.push(`/dashboard/account/${accountName}`);
+      router.push(`/dashboard/${accountName}`);
     } catch (error) {
       console.log(error);
       toast({

@@ -28,14 +28,14 @@ const billInfo = [
 const ElectricityBillInfo = () => {
   const latest = billInfo[0];
   return (
-    <Card>
+    <Card className="h-[550px]">
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle className="text-xl">My Electricity Bill</CardTitle>
         <Badge variant="destructive" className="text-md">
           {latest.month}
         </Badge>
       </CardHeader>
-      <CardContent className="flex h-[400px] flex-col">
+      <CardContent className="flex flex-col">
         <div className="flex items-center justify-between">
           <h2 className="w-max text-3xl font-bold text-chart-2">
             ${latest.cost}
@@ -44,7 +44,7 @@ const ElectricityBillInfo = () => {
             ({latest.usage} kWh)
           </span>
         </div>
-        <ScrollArea className="flex-grow space-y-4 p-4">
+        <ScrollArea className="h-[400px] flex-grow space-y-4 p-4">
           {billInfo.slice(1).map((bill, i) => (
             <Accordion type="single" collapsible key={bill.month}>
               <AccordionItem value={`item-${i}`}>
