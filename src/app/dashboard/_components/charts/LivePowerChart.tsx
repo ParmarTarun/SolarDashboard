@@ -22,7 +22,7 @@ import { FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getLivePowerBreakdown } from "@/lib/electricityMap";
 import { Badge } from "@/components/ui/badge";
-import LoadingPlaceholder from "../LoadingPlaceholder";
+import LoadingPlaceholder from "../../../../components/LoadingPlaceholder";
 import { CircleDot, Terminal } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 

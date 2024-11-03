@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingPlaceholder from "../_components/LoadingPlaceholder";
+import LoadingPlaceholder from "@/components/LoadingPlaceholder";
 
 const AccountPageLoader = () => {
   return (

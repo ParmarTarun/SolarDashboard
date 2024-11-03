@@ -31,3 +31,16 @@ export type powerType =
   | "oil"
   | "solar"
   | "wind";
+
+export type quoteFormtype = {
+  name: string;
+  email: string;
+  zone: string;
+  noOfPeople: number;
+  hasSolarPanel: boolean;
+  acRegularyUsed: boolean;
+  swimminPool: boolean;
+  electricVehicle: boolean;
+  utilityBill: number;
+  stayHome: boolean;
+};

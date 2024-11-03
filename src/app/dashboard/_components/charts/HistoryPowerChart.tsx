@@ -34,7 +34,7 @@ import { powerType } from "@/types";
 import { capitalize, createSelectOptions, powerTypes } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import LoadingPlaceholder from "../LoadingPlaceholder";
+import LoadingPlaceholder from "../../../../components/LoadingPlaceholder";
 import { LightningBoltIcon } from "@radix-ui/react-icons";
 
 const chartConfig = {

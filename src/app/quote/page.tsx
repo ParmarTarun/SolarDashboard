@@ -1,11 +1,9 @@
-"use client";
-
 import React from "react";
 import QuoteForm from "./_components/QuoteForm";
 
 const QuotePage = () => {
   return (
-    <div className="mt-5 flex flex-1">
+    <div className="h-100 mx-auto mt-5 w-full py-8">
       <QuoteForm />
     </div>
   );

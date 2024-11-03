@@ -18,7 +18,7 @@ const DashboardLayout = ({ children }) => {
   const paths = pathname.split("/").filter(Boolean);
 
   return (
-    <div className="h-100 mx-auto mt-5 h-full w-4/5 py-8">
+    <div className="h-100 mx-auto mt-5 w-full py-8">
       <Breadcrumb className="flex">
         <BreadcrumbList>
           <BreadcrumbItem>

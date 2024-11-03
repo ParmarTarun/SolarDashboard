@@ -5,8 +5,8 @@ import Link from "next/link";
 import React from "react";
 
 const navLinks = [
-  { label: "What it does?", to: "/details" },
-  { label: "Pricing", to: "/pricing" },
+  // { label: "What it does?", to: "/details" },    // page to be added
+  // { label: "Pricing", to: "/pricing" },        // page to be added
   { label: "Get a quote", to: "/quote" },
 ];
 
