@@ -17,7 +17,7 @@ export default function HomePage() {
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 dark:text-gray-400 md:text-xl">
                   Streamline your solar panel installation and hardware
-                  procurement with our all-in-one SaaS solution.
+                  procurement with our all-in-one solution.
                 </p>
               </div>
               <div className="space-x-4">
@@ -31,7 +31,7 @@ export default function HomePage() {
                     <Button>Dashboard</Button>
                   </Link>
                 </SignedIn>
-                <Link href={"/about"}>
+                <Link href={"/quote"}>
                   <Button variant="outline">Learn More</Button>
                 </Link>
               </div>

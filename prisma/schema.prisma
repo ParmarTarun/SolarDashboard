@@ -38,10 +38,16 @@ model AiChat {
     user   User   @relation(fields: [userId], references: [id])
 }
 
-model Bill {
-    id    String @id @default(cuid())
-    month String
-    year  Int
-    cost  Int
-    usage Int
+model Quote {
+    id              String  @id @default(cuid())
+    name            String
+    email           String
+    zone            String
+    noOfPeople      Int
+    hasSolarPanel   Boolean
+    acRegularyUsed  Boolean
+    swimminPool     Boolean
+    electricVehicle Boolean
+    utilityBill     Int
+    stayHome        Boolean
 }

@@ -14,10 +14,12 @@ import { quoteFormtype } from "@/types";
 import BasicDetails from "./FormSteps/BasicDetails";
 import HouseholdDetails from "./FormSteps/HouseholdDetails";
 import { Badge } from "@/components/ui/badge";
-import { MoveRight } from "lucide-react";
+import { Loader, MoveRight } from "lucide-react";
 import UtilityDetails from "./FormSteps/UtilityDetails";
 import QuoteResults from "./FormSteps/QuoteResults";
 import ThankYou from "./FormSteps/Thankyou";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 const formInitialValues = {
   name: "",
@@ -36,22 +38,21 @@ const QuoteForm = () => {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<quoteFormtype>(formInitialValues);
   const [completed, setCompleted] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
   const steps = [
     { title: "Personal Information", component: <BasicDetails /> },
     { title: "Household Information", component: <HouseholdDetails /> },
     { title: "Utitlity Details", component: <UtilityDetails /> },
     {
       title: "Your Results",
-      component: <QuoteResults choosePlan={() => setStep(steps.length - 1)} />,
+      component: <QuoteResults choosePlan={() => setCompleted(true)} />,
     },
   ];
 
   const handleNext = () => {
     if (step < steps.length - 1) {
       setStep(step + 1);
-    } else {
-      setCompleted(true);
     }
   };
 
@@ -61,12 +62,23 @@ const QuoteForm = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (step === steps.length) {
-      console.log("Form submitted:", formData);
-      // Here you would typically send the data to your server
-      alert("Form submitted successfully!");
+    // final step
+    if (step === 2) {
+      setLoading(true);
+      try {
+        await axios.post("/api/quote", formData);
+        handleNext();
+      } catch (e) {
+        console.log(e);
+        toast({
+          title: "Oops!",
+          description: "Failed to submit your details.",
+        });
+      } finally {
+        setLoading(false);
+      }
     } else {
       handleNext();
     }
@@ -131,7 +143,16 @@ const QuoteForm = () => {
                   Previous
                 </Button>
               )}
-              <Button type="submit">{step === 2 ? "Submit" : "Next"}</Button>
+              <Button type="submit" disabled={loading}>
+                {step === 2 ? (
+                  <>
+                    {loading && <Loader className="animate-spin" />}
+                    Submit
+                  </>
+                ) : (
+                  "Next"
+                )}
+              </Button>
             </CardFooter>
           )}
         </form>

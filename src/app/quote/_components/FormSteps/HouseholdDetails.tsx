@@ -82,7 +82,7 @@ const HouseholdDetails = () => {
             }
           />
           <Label htmlFor="stayHome" className="text-lg">
-            Do pepole stay home during weekdays?
+            Do people stay home during weekdays?
           </Label>
         </div>
       </div>
