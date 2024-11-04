@@ -16,17 +16,6 @@ interface AccountCardProps {
 }
 
 const AccountCard: FC<AccountCardProps> = ({ account }) => {
-  const handleDeleteProject = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // TODO: Implement
-  };
-  const handleEditProject = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // TODO: Implement
-  };
-
   return (
     <Card className="flex h-[200px] flex-col justify-between transition-shadow hover:border-primary hover:shadow-lg">
       <CardHeader className="">
@@ -38,12 +27,13 @@ const AccountCard: FC<AccountCardProps> = ({ account }) => {
         </Badge>
       </CardHeader>
       <CardFooter className="flex-row justify-end gap-4">
-        <Button variant="outline" onClick={handleEditProject}>
+        {/* // TODO implement the api */}
+        {/* <Button variant="outline" onClick={handleEditProject}>
           <Edit2Icon />
         </Button>
         <Button variant="destructive" onClick={handleDeleteProject}>
           <Trash2Icon />
-        </Button>
+        </Button> */}
       </CardFooter>
     </Card>
   );
