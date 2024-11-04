@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Sun } from "lucide-react";
@@ -5,8 +6,8 @@ import Link from "next/link";
 import React from "react";
 
 const navLinks = [
-  { label: "What it does?", to: "/details" },
-  { label: "Pricing", to: "/pricing" },
+  // { label: "What it does?", to: "/details" },    // page to be added
+  // { label: "Pricing", to: "/pricing" },        // page to be added
   { label: "Get a quote", to: "/quote" },
 ];
 
@@ -31,6 +32,12 @@ const Header = () => {
         ))}
       </nav>
       <SignedIn>
+        <Link
+          className="mr-4 text-lg font-medium underline-offset-4 hover:underline"
+          href={"/dashboard"}
+        >
+          Dashboard
+        </Link>
         <UserButton />
       </SignedIn>
       <SignedOut>

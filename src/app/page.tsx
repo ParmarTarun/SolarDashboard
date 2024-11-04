@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import { BarChart, Battery, Star, Zap } from "lucide-react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { SignInButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="mx-auto flex min-h-screen w-max flex-col">
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
           <div className="container px-4 md:px-6">
@@ -17,14 +17,21 @@ export default function HomePage() {
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 dark:text-gray-400 md:text-xl">
                   Streamline your solar panel installation and hardware
-                  procurement with our all-in-one SaaS solution.
+                  procurement with our all-in-one solution.
                 </p>
               </div>
               <div className="space-x-4">
-                <SignInButton>
-                  <Button>Join Now</Button>
-                </SignInButton>
-                <Link href={"/about"}>
+                <SignedOut>
+                  <SignInButton>
+                    <Button>Join Now</Button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <Link href="/dashboard">
+                    <Button>Dashboard</Button>
+                  </Link>
+                </SignedIn>
+                <Link href={"/quote"}>
                   <Button variant="outline">Learn More</Button>
                 </Link>
               </div>

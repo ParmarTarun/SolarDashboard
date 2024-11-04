@@ -1,107 +1,163 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
-import { z } from "zod";
-import { FormDataSchema } from "@/lib/schemas/QuoteForm";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
-import Progress from "./Progress";
-import Step1 from "./FormSteps/Step1";
-import Step2 from "./FormSteps/Step2";
-import Step3 from "./FormSteps/Step3";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { FormContext } from "@/hooks/use-quote-form";
+import { quoteFormtype } from "@/types";
+import BasicDetails from "./FormSteps/BasicDetails";
+import HouseholdDetails from "./FormSteps/HouseholdDetails";
+import { Badge } from "@/components/ui/badge";
+import { Loader, MoveRight } from "lucide-react";
+import UtilityDetails from "./FormSteps/UtilityDetails";
+import QuoteResults from "./FormSteps/QuoteResults";
+import ThankYou from "./FormSteps/Thankyou";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
-type Inputs = z.infer<typeof FormDataSchema>;
+const formInitialValues = {
+  name: "",
+  email: "",
+  acRegularyUsed: false,
+  electricVehicle: false,
+  hasSolarPanel: false,
+  noOfPeople: 1,
+  stayHome: false,
+  swimminPool: false,
+  utilityBill: 50,
+  zone: "",
+};
 
-const steps = [
-  {
-    id: "Step 1",
-    name: "Basic Information",
-    fields: ["name", "email", "zone"],
-  },
-  {
-    id: "Step 2",
-    name: "Address",
-    fields: ["country", "state", "city", "street", "zip"],
-  },
-  { id: "Step 3", name: "Complete" },
-];
+const QuoteForm = () => {
+  const [step, setStep] = useState(0);
+  const [formData, setFormData] = useState<quoteFormtype>(formInitialValues);
+  const [completed, setCompleted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const steps = [
+    { title: "Personal Information", component: <BasicDetails /> },
+    { title: "Household Information", component: <HouseholdDetails /> },
+    { title: "Utitlity Details", component: <UtilityDetails /> },
+    {
+      title: "Your Results",
+      component: <QuoteResults choosePlan={() => setCompleted(true)} />,
+    },
+  ];
 
-export default function QuoteForm() {
-  const [currentStep, setCurrentStep] = useState(1);
-
-  const {
-    register,
-    handleSubmit,
-    trigger,
-    reset,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useForm<Inputs>({
-    resolver: zodResolver(FormDataSchema),
-  });
-  const processForm: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
-    reset();
+  const handleNext = () => {
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    }
   };
 
-  type FieldName = keyof Inputs;
+  const handlePrevious = () => {
+    if (step > 0) {
+      setStep(step - 1);
+    }
+  };
 
-  const next = async () => {
-    const fields = steps[currentStep - 1].fields;
-    // validate
-    const output = await trigger(fields as FieldName[], { shouldFocus: true });
-    if (!output) return;
-
-    if (currentStep === steps.length) {
-      handleSubmit(processForm);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // final step
+    if (step === 2) {
+      setLoading(true);
+      try {
+        await axios.post("/api/quote", formData);
+        handleNext();
+      } catch (e) {
+        console.log(e);
+        toast({
+          title: "Oops!",
+          description: "Failed to submit your details.",
+        });
+      } finally {
+        setLoading(false);
+      }
     } else {
-      setCurrentStep((step) => step + 1);
+      handleNext();
     }
   };
 
-  const prev = () => {
-    if (currentStep > 0) {
-      setCurrentStep((step) => step - 1);
-    }
+  const handleReset = () => {
+    setFormData(formInitialValues);
+    setStep(0);
+    setCompleted(false);
   };
 
   return (
-    <div className="mx-auto mt-12 grid grid-cols-12 gap-8">
-      <Progress steps={steps} currentStep={currentStep} />
-      <div className="col-span-8">
-        <form onSubmit={handleSubmit(processForm)}>
-          {currentStep === 1 && (
-            <Step1
-              errors={errors}
-              register={register}
-              setValue={setValue}
-              zoneValue={getValues("zone")}
-            />
-          )}
-
-          {currentStep === 2 && <Step2 errors={errors} register={register} />}
-
-          {currentStep === 3 && <Step3 />}
-        </form>
-
-        <div className="mt-8 pt-5">
-          <div className="flex gap-4">
-            <Button type="button" onClick={prev} disabled={currentStep === 1}>
-              Back
-            </Button>
-            <Button
-              type="button"
-              onClick={next}
-              disabled={currentStep === steps.length}
-            >
-              NEXT
-            </Button>
-          </div>
-        </div>
+    <FormContext.Provider value={{ formData, setFormData }}>
+      <div className="flex items-center justify-between">
+        <h2 className="mb-4 text-4xl font-semibold">Price Estimator</h2>
+        <Button variant="destructive" onClick={handleReset}>
+          RESET
+        </Button>
       </div>
-    </div>
+      <Card className="min-h-[70vh]">
+        <form onSubmit={handleSubmit}>
+          <CardHeader>
+            <CardTitle className="mx-auto my-2 flex gap-4">
+              {steps.map((el, i) => {
+                let style = "text-lg font-medium border-primary";
+                if (i <= step) {
+                  // if completed or current
+                  style += " bg-primary text-secondary";
+                }
+                return (
+                  <div key={i} className="flex items-center gap-4">
+                    <Badge variant="outline" className={style}>
+                      {el.title}
+                    </Badge>
+                    {i < steps.length - 1 && <MoveRight />}
+                  </div>
+                );
+              })}
+            </CardTitle>
+          </CardHeader>
+          {completed ? (
+            <ThankYou />
+          ) : (
+            <CardContent className="flex-1 flex-grow">
+              <div className="mx-auto h-full w-1/2">
+                <h2 className="mb-4 text-2xl font-semibold">
+                  {steps[step].title}
+                </h2>
+                <hr className="mb-4 border-primary" />
+              </div>
+              {steps[step].component}
+            </CardContent>
+          )}
+          {step <= 2 && (
+            <CardFooter className="mx-auto flex w-1/2 justify-center gap-6">
+              {step > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePrevious}
+                >
+                  Previous
+                </Button>
+              )}
+              <Button type="submit" disabled={loading}>
+                {step === 2 ? (
+                  <>
+                    {loading && <Loader className="animate-spin" />}
+                    Submit
+                  </>
+                ) : (
+                  "Next"
+                )}
+              </Button>
+            </CardFooter>
+          )}
+        </form>
+      </Card>
+    </FormContext.Provider>
   );
-}
+};
+export default QuoteForm;

@@ -1,7 +1,3 @@
-import { FieldErrors, UseFormRegister } from "react-hook-form";
-import { FormDataSchema } from "./lib/schemas/QuoteForm";
-import { z } from "zod";
-
 export type Message = {
   id: number;
   text: string;
@@ -14,7 +10,28 @@ export type formStep = {
   fields?: string[];
 };
 
-export type formStepComponentProps = {
-  register: UseFormRegister<z.infer<typeof FormDataSchema>>;
-  errors: FieldErrors<z.infer<typeof FormDataSchema>>;
+export type powerType =
+  | "biomass"
+  | "coal"
+  | "gas"
+  | "geothermal"
+  | "hydro"
+  | "hydro discharge"
+  | "battery discharge"
+  | "nuclear"
+  | "oil"
+  | "solar"
+  | "wind";
+
+export type quoteFormtype = {
+  name: string;
+  email: string;
+  zone: string;
+  noOfPeople: number;
+  hasSolarPanel: boolean;
+  acRegularyUsed: boolean;
+  swimminPool: boolean;
+  electricVehicle: boolean;
+  utilityBill: number;
+  stayHome: boolean;
 };
